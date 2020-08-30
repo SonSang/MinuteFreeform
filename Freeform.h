@@ -392,6 +392,76 @@ namespace MN {
 			n.normalize();
 			return n;
 		}
+
+		struct CurvatureInfo {
+			Real K;			// Gaussian curvature
+			Real H;			// Mean curvature
+			Vec3 w1, w2;	// Principal directions
+			Real k1, k2;	// Principal curvatures
+		};
+		inline virtual CurvatureInfo curvature(double u, double v) {
+			CurvatureInfo cinfo;
+			Vec3 point, Fu, Fv, Fuu, Fuv, Fvv, normal;
+			point = evaluate(u, v);
+			Fu = differentiate(u, v, 1, 0);
+			Fv = differentiate(u, v, 0, 1);
+			Fuu = differentiate(u, v, 2, 0);
+			Fuv = differentiate(u, v, 1, 1);
+			Fvv = differentiate(u, v, 0, 2);
+			normal = Fu.cross(Fv);
+			normal.normalize();
+
+			Real
+				E = Fu.dot(Fu),
+				F = Fu.dot(Fv),
+				G = Fv.dot(Fv),
+				denom = sqrt(E * G - F * F),
+				e = Vec3::Tcross(Fu, Fv, Fuu) / denom,
+				f = Vec3::Tcross(Fu, Fv, Fuv) / denom,
+				g = Vec3::Tcross(Fu, Fv, Fvv) / denom;
+			denom = E * G - F * F;
+			
+			cinfo.K = (e * g - f * f) / denom;
+			cinfo.H = 0.5 * (e * G - 2.0 * f * F + g * E) / denom;
+			Real
+				tmp = sqrt(cinfo.H * cinfo.H - cinfo.K);
+			cinfo.k1 = cinfo.H + tmp;
+			cinfo.k2 = cinfo.H - tmp;
+			Real
+				a11 = (f * F - e * G) / denom,
+				a12 = (g * F - f * G) / denom,
+				a21 = (e * F - f * E) / denom,
+				a22 = (f * F - g * E) / denom;
+			const static Real
+				eps = 1e-5;	// @TODO : Have to set proper value for this
+			if (fabs(a12) < eps && fabs(a21) < eps) {
+				// Set principal direction properly
+				Real
+					a11_k1 = (a11 + cinfo.k1) * (a11 + cinfo.k1),
+					a11_k2 = (a11 + cinfo.k2) * (a11 + cinfo.k2);	// Compare a11 + k1, k2. Find k s.t. a11 = -k
+				if (a11_k1 < a11_k2) {
+					// Xu direction has k1 curvature
+					cinfo.w1 = Fu;
+					cinfo.w2 = Fv;
+				}
+				else {
+					// Xu direction has k2 curvature
+					cinfo.w1 = Fv;
+					cinfo.w2 = Fu;
+				}
+			}
+			else if (fabs(a12) < eps) {
+				cinfo.w1 = Fv + Fu * ((-cinfo.k1 - a22) / a21);
+				cinfo.w2 = Fv + Fu * ((-cinfo.k2 - a22) / a21);
+			}
+			else {
+				cinfo.w1 = Fu + Fv * ((-cinfo.k1 - a11) / a12);
+				cinfo.w2 = Fu + Fv * ((-cinfo.k2 - a11) / a12);
+			}
+			cinfo.w1.normalize();
+			cinfo.w2.normalize();
+			return cinfo;
+		}
 	};
 
 	// ============================================================= Freeform 3d volume
