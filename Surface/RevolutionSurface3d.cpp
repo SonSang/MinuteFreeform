@@ -3,6 +3,8 @@
 namespace MN {
 	RevolutionSurface3d RevolutionSurface3d::create(const Freeform2dc::Ptr profile) {
 		RevolutionSurface3d surf;
+		surf.setDomain(0, profile->getDomain());
+		surf.setDomain(1, Domain::create(0, PI20));
 		surf.profile = profile;
 		return surf;
 	}
