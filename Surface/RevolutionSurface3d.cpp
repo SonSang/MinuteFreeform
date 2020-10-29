@@ -12,6 +12,13 @@ namespace MN {
 		return std::make_shared<RevolutionSurface3d>(create(profile));
 	}
 
+	Freeform2dc::Ptr RevolutionSurface3d::getProfile() const {
+		return profile;
+	}
+	void RevolutionSurface3d::setProfile(const Freeform2dc::Ptr profile) {
+		this->profile = profile;
+	}
+
 	static inline Vec3 rotY(const Vec2& v, Real radian) {
 		return { v[0] * cos(radian), v[1], v[0] * sin(radian) };
 	}

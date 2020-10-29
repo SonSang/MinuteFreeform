@@ -31,6 +31,9 @@ namespace MN {
 		static RevolutionSurface3d create(const Freeform2dc::Ptr profile);
 		static Ptr createPtr(const Freeform2dc::Ptr profile);
 
+		Freeform2dc::Ptr getProfile() const;
+		void setProfile(const Freeform2dc::Ptr profile);
+
 		// u : Parameter for profile curve evaluation
 		// v : Parameter for rotation around Y axis
 		virtual Vec3 evaluate(Real u, Real v) const;
