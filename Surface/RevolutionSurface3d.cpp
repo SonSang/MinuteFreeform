@@ -66,6 +66,6 @@ namespace MN {
 			return { curvePoint[0] * sin(v), 0, curvePoint[0] * -cos(v) };
 		}
 		else
-			throw(std::runtime_error("Bezier surface differentiation is only allowed up to 2nd derivatives"));
+			throw(std::runtime_error("Revolution surface differentiation is only allowed up to 2nd derivatives"));
 	}
 }
