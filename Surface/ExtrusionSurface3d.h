@@ -23,20 +23,20 @@ namespace MN {
 		ExtrusionSurface3d() = default;
 
 		// Profile curve on XY plane that is extruded along Z axis
-		std::vector<Freeform2dc::Ptr> profile;
+		Freeform2dc::Ptr profile;
 	public:
 		using Ptr = std::shared_ptr<ExtrusionSurface3d>;
 
-		static ExtrusionSurface3d create(const std::vector<Freeform2dc::Ptr>& profile);
-		static Ptr createPtr(const std::vector<Freeform2dc::Ptr>& profile);
+		static ExtrusionSurface3d create(const Freeform2dc::Ptr profile);
+		static Ptr createPtr(const Freeform2dc::Ptr profile);
 
-		const std::vector<Freeform2dc::Ptr>& getProfile() const;
-		void setProfile(const std::vector<Freeform2dc::Ptr>& profile);
+		Freeform2dc::Ptr getProfile() const;
+		void setProfile(const Freeform2dc::Ptr profile);
 
 		// u : Parameter for profile curve evaluation
 		// v : Parameter for extrusion along Z axis
-		virtual Vec3 evaluate(int curveID, Real u, Real v) const;
-		virtual Vec3 differentiate(int curveID, Real u, Real v, int uOrder, int vOrder) const;
+		virtual Vec3 evaluate(Real u, Real v) const;
+		virtual Vec3 differentiate(Real u, Real v, int uOrder, int vOrder) const;
 	};
 }
 
